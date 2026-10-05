@@ -1,0 +1,38 @@
+# VULCAN - single source of truth for bus parameters.
+# Every script reads from here. NEVER hard-code interface / bitrate / arbitration IDs
+# anywhere else (PROJECT.md §8).
+
+interface:
+  channel: can0            # SocketCAN device (SH-C30G via gs_usb enumerates as can0)
+  bustype: socketcan
+  bitrate: 500000          # CONFIRMED empirically - clean frames captured on the Clio 4 OBD bus (2026-09-04)
+  bitrate_confirmed: true
+
+termination:
+  external_ohms: 120       # SH-C30G has NO built-in 120 Ω of its own
+  measured_ohms: 120.4     # across cluster CAN pair (pins 23/24), unpowered, 2026-08-07
+  cluster_terminated: true # cluster provides one internal termination (~120 Ω nominal)
+  note: >
+    Cluster reads 120.4 Ohm across pins 23/24 unpowered -> it carries one internal
+    termination. On this short 2-node bench the single termination may suffice; for a
+    proper 60 Ohm total, optionally add one 120 Ohm across CAN-H/CAN-L at the SH-C30G end.
+    Decide empirically once the bus is up.
+
+# --- Filled during Phase 1 (passive mapping) & Phase 2 (UDS discovery) ---
+arbitration_ids:
+  # 29 distinct IDs observed on the Clio 4 bus (OBD capture 2026-09-04). Full cartography
+  # via: python3 src/mapping/cartography.py captures/candump-2026-09-04_175943.log
+  observed_count: 29
+  wake_frame: "0x350"      # 10 Hz NM-style frame, rolling counter on byte 0; blasted ~16x at wake
+  busiest: ["0x0C6", "0x12E"]  # 100 Hz, live-signal payloads
+  known_tx: {}             # cluster's OWN transmitted IDs - TBD (needs the cluster awake on the bench)
+  diagnostic:
+    request_id: null       # physical diagnostic request to the cluster (e.g. 0x7xx) - Phase 2
+    response_id: null      # cluster's diagnostic response (e.g. 0x7xx) - Phase 2
+    functional_id: null    # functional/broadcast request (commonly 0x7DF) - Phase 2
+
+# --- Discovered UDS surface (Phase 2) ---
+uds:
+  isotp_addressing: normal # normal | extended - confirm during discovery
+  services_seen: []        # e.g. [0x10, 0x22, 0x27, 0x19]
+  security_access: null    # set to the 0x27 sub-function level once detected (e.g. 0x01/0x03)

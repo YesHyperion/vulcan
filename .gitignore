@@ -1,0 +1,28 @@
+# --- Raw CAN captures (can be large / sensitive) ---
+captures/*
+!captures/.gitkeep
+
+# --- Side-channel trace data (large binary) ---
+sidechannel/**/*.npy
+sidechannel/**/*.h5
+sidechannel/traces/
+
+# --- Secrets: never commit keys, seeds, VINs, vehicle-identifying data (PROJECT.md §4.6) ---
+secrets/
+*.key
+*.pem
+.env
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+.pytest_cache/
+
+# --- OS / editor ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

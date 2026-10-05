@@ -1,0 +1,14 @@
+# VULCAN Python tooling (host runs Linux; SocketCAN backbone).
+# Install into a venv on the chosen host - see docs/bench-setup.md.
+
+python-can>=4.3      # SocketCAN bus access (Phase 0-3)
+cantools>=39         # DBC / signal decoding (Phase 1)
+can-isotp>=2.0       # ISO 15765-2 transport for UDS (Phase 2-3)
+pyyaml>=6.0          # read config/bus.yaml
+
+# --- Installed later, kept here for reference (NOT pulled by the core setup) ---
+# Phase 2 discovery - installed separately (git):
+#   caringcaribou  ->  https://github.com/CaringCaribou/caringcaribou
+# Phase 3 fuzzing base (heavy dep tree - install when Phase 3 starts):
+#   boofuzz>=0.4
+# Phase 4 side-channel tooling (ChipWhisperer) - install per its own instructions.
